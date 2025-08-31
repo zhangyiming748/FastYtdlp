@@ -1,0 +1,13 @@
+services:
+  ytdlp:
+    # build:
+    #   context: .
+    #   dockerfile: dockerfile
+    image: zhangyiming748/ytdlp:v0.0.1
+    container_name: ytdlp
+    volumes:
+      - ./:/data
+      - ./videos:/videos
+    command: top
+    environment:
+      - PROXY=http://192.168.5.2:8889
