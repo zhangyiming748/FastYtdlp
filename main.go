@@ -33,6 +33,7 @@ func main() {
 		proxy = "192.168.5.2:8889"
 	}
 	location := "/data/videos"
+	os.MkdirAll(location, os.ModePerm)
 	lines := util.ReadByLine("/data/post.link")
 	for i, line := range lines {
 		log.Printf("正在处理第%d个链接:%s", i+1, line)
