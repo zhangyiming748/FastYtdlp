@@ -9,7 +9,6 @@
 package history
 
 import (
-	"bufio"
 	"os"
 	"path/filepath"
 	"strings"
@@ -42,17 +41,15 @@ func IsURLDownloaded(url string) (bool) {
 			if linkParts == urlParts {
 				return true
 			}
-		} else if link == url {
-			return true
-		}
+		} 
 	}
-
-	
+	 return false
 }
 
 // RecordDownloadedURL 记录已下载的URL
 func RecordDownloadedURL(url string) error {
-	file, err := os.OpenFile(historyFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	history:=filepath.Join(ROOT, HISTORYFILE)
+	file, err := os.OpenFile(history, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}
@@ -60,22 +57,4 @@ func RecordDownloadedURL(url string) error {
 
 	_, err = file.WriteString(url + "\n")
 	return err
-}
-
-// extractViewKey 从URL中提取viewkey参数
-func extractViewKey(url string) string {
-	// 查找viewkey参数
-	start := strings.Index(url, "viewkey=")
-	if start == -1 {
-		return ""
-	}
-	start += len("viewkey=")
-	
-	// 查找参数结束位置（可能是&或者字符串结尾）
-	end := strings.Index(url[start:], "&")
-	if end == -1 {
-		return url[start:]
-	}
-	
-	return url[start : start+end]
 }
