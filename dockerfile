@@ -15,4 +15,5 @@ RUN sed -i 's#https\?://dl-cdn.alpinelinux.org/alpine#http://mirrors.tuna.tsingh
 RUN python -m pip install --upgrade pip
 # RUN pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
 RUN python3 -m pip install -U "yt-dlp[default]"
-ENTRYPOINT [ "/usr/bin/ytd" ]
+# ENTRYPOINT [ "/usr/bin/ytd" ]
+CMD [ "/usr/bin/ytd" ]
