@@ -9,6 +9,7 @@ RUN go build -o ytd main.go
 
 FROM python:3.12.11-alpine3.22
 COPY --from=builder /app/ytd /usr/bin/ytd
+RUN apk add ffmpeg mediainfo
 RUN sed -i 's#https\?://dl-cdn.alpinelinux.org/alpine#http://mirrors.tuna.tsinghua.edu.cn/alpine#g' /etc/apk/repositories
 # RUN go env -w GO111MODULE=on
 # RUN go env -w GOPROXY=https://goproxy.cn,direct
