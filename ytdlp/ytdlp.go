@@ -1,7 +1,7 @@
 package ytdlp
 
 import (
-	"FastYTDLP/util"
+	"github.com/zhangyiming748/FastYtdlp/util"
 	"fmt"
 	"log"
 	"os/exec"
