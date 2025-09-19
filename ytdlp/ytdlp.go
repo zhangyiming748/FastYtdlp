@@ -1,10 +1,11 @@
 package ytdlp
 
 import (
-	"github.com/zhangyiming748/FastYtdlp/util"
 	"fmt"
 	"log"
 	"os/exec"
+
+	"github.com/zhangyiming748/FastYtdlp/util"
 )
 
 func DownloadVideo(uri, proxy, location string) (title string) {

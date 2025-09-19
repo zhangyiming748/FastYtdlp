@@ -1,17 +1,18 @@
 package FastYtdlp
 
 import (
-	"github.com/zhangyiming748/FastYtdlp/util"
-	"github.com/zhangyiming748/FastYtdlp/ytdlp"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/zhangyiming748/FastYtdlp/util"
+	"github.com/zhangyiming748/FastYtdlp/ytdlp"
 )
 
 func Ytdlp(root, proxy string) {
 	os.MkdirAll(root, os.ModePerm)
-	post:=filepath.Join(root, "post.link")
+	post := filepath.Join(root, "post.link")
 	lines := util.ReadByLine(post)
 	for i, line := range lines {
 		log.Printf("正在处理第%d个链接:%s", i+1, line)
@@ -25,4 +26,3 @@ func Ytdlp(root, proxy string) {
 		}
 	}
 }
-
