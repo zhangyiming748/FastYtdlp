@@ -28,6 +28,9 @@ func ReadByLine(fp string) []string {
 		if c == io.EOF {
 			break
 		}
+		if strings.HasPrefix(string(a), "#") {
+			continue
+		}
 		lines = append(lines, string(a))
 	}
 	return lines
