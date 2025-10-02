@@ -33,7 +33,7 @@ func Download(root string, yc YtdlpConfig) {
 				one := new(storage.Pornhub)
 				one.Key = key
 				if has, _ := one.FindByKey(); has {
-					log.Printf("已存在%s", key)
+					log.Printf("由于数据库中已存在%n\t跳过此次下载\n", one.Name)
 					continue
 				}
 				one.Name = name
@@ -45,7 +45,7 @@ func Download(root string, yc YtdlpConfig) {
 				one := new(storage.Pornhub)
 				one.Key = key
 				if has, _ := one.FindByKey(); has {
-					log.Printf("已存在%s", key)
+					log.Printf("由于数据库中已存在%n\t跳过此次下载\n", one.Name)
 					continue
 				}
 				one.Name = name
