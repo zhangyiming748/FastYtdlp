@@ -38,7 +38,12 @@ func Download(root string, yc YtdlpConfig) {
 				}
 				one.Name = name
 				one.From = "pornhub"
-				one.InsertOne()
+				insertOne, err := one.InsertOne()
+				if err != nil {
+					log.Printf("插入%d条数据失败:%v\n", insertOne, err)
+				} else {
+					log.Printf("成功插入%d条数据\n", insertOne)
+				}
 			} else {
 				name := ytdlp.DownloadVideo(line, yc.Proxy, root)
 				key = strings.Split(line, "=")[1]
@@ -50,7 +55,12 @@ func Download(root string, yc YtdlpConfig) {
 				}
 				one.Name = name
 				one.From = "pornhub"
-				one.InsertOne()
+				insertOne, err := one.InsertOne()
+				if err != nil {
+					log.Printf("插入%d条数据失败:%v\n", insertOne, err)
+				} else {
+					log.Printf("成功插入%d条数据\n", insertOne)
+				}
 			}
 		} else {
 			//其他来源的网站
