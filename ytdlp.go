@@ -25,15 +25,17 @@ func Download(root string, yc YtdlpConfig) {
 		if strings.Contains(line, "pornhub") {
 			var key string
 			if strings.Contains(line, "#") {
-				prefix := strings.Split(line, "#")[0]
-				key = strings.Split(prefix, "=")[1]
-				suffix := strings.Split(line, "#")[1]
-				local := filepath.Join(root, suffix)
-				name := ytdlp.DownloadVideo(prefix, yc.Proxy, local)
+				uri := strings.Split(line, "#")[0]
+				key = strings.Split(uri, "=")[1]
+				subFolder := strings.Split(line, "#")[1]
+				local := filepath.Join(root, subFolder)
+				name := ytdlp.DownloadVideo(uri, yc.Proxy, local)
 				one := new(storage.Pornhub)
 				one.Key = key
-				if has, _ := one.FindByKey(); has {
-					log.Printf("由于数据库中已存在%n\t跳过此次下载\n", one.Name)
+				if has, err := one.FindByKey(); err!=nil {
+					log.Fatalf("查询数据库失败:%v\n", err)
+				}else if has{
+					log.Printf("由于数据库中已存在%v\t跳过此次下载\n", one.Name)
 					continue
 				}
 				one.Name = name
@@ -49,8 +51,10 @@ func Download(root string, yc YtdlpConfig) {
 				key = strings.Split(line, "=")[1]
 				one := new(storage.Pornhub)
 				one.Key = key
-				if has, _ := one.FindByKey(); has {
-					log.Printf("由于数据库中已存在%n\t跳过此次下载\n", one.Name)
+				if has, err := one.FindByKey(); err != nil {
+					log.Fatalf("查询数据库失败:%v\n", err)
+				} else if has {
+					log.Printf("由于数据库中已存在%v\t跳过此次下载\n", one.Name)
 					continue
 				}
 				one.Name = name

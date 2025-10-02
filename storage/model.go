@@ -19,5 +19,5 @@ func (p *Pornhub) InsertOne() (int64, error) {
 }
 
 func (p *Pornhub) FindByKey() (bool, error) {
-	return GetMysql().Where("key = ?", p.Key).Get(p)
+	return GetMysql().Where("`key` = ?", p.Key).Get(p)
 }
