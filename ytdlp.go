@@ -13,7 +13,7 @@ import (
 
 func Download(root string, yc YtdlpConfig) {
 	storage.SetMysql(yc.User, yc.Password, yc.Host, yc.Port)
-	storage.GetMysql().Sync2(storage.Pornhub{})
+	storage.GetMysql().Sync2(storage.Video{})
 	os.MkdirAll(root, os.ModePerm)
 	post := filepath.Join(root, "post.link")
 	log.Printf("根据%v文件开始下载\n", post)
@@ -30,11 +30,11 @@ func Download(root string, yc YtdlpConfig) {
 				subFolder := strings.Split(line, "#")[1]
 				local := filepath.Join(root, subFolder)
 				name := ytdlp.DownloadVideo(uri, yc.Proxy, local)
-				one := new(storage.Pornhub)
-				one.Key = key
-				if has, err := one.FindByKey(); err!=nil {
+				one := new(storage.Video)
+				one.Keyword = key
+				if has, err := one.FindByKeyword(); err != nil {
 					log.Fatalf("查询数据库失败:%v\n", err)
-				}else if has{
+				} else if has {
 					log.Printf("由于数据库中已存在%v\t跳过此次下载\n", one.Name)
 					continue
 				}
@@ -49,9 +49,9 @@ func Download(root string, yc YtdlpConfig) {
 			} else {
 				name := ytdlp.DownloadVideo(line, yc.Proxy, root)
 				key = strings.Split(line, "=")[1]
-				one := new(storage.Pornhub)
-				one.Key = key
-				if has, err := one.FindByKey(); err != nil {
+				one := new(storage.Video)
+				one.Keyword = key
+				if has, err := one.FindByKeyword(); err != nil {
 					log.Fatalf("查询数据库失败:%v\n", err)
 				} else if has {
 					log.Printf("由于数据库中已存在%v\t跳过此次下载\n", one.Name)
