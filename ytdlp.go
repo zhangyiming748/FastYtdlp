@@ -6,16 +6,16 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/zhangyiming748/FastYtdlp/storage"
+	"github.com/zhangyiming748/FastYtdlp/sqlite"
 	"github.com/zhangyiming748/FastYtdlp/util"
 )
 
-func Download(root string, yc YtdlpConfig) {
-	storage.SetMysql(yc.User, yc.Password, yc.Host, yc.Port)
-	err := storage.GetMysql().Sync2(storage.Video{})
-	if err != nil {
-		log.Fatalf("创建数据库同步表结构连接失败:%v\n", err)
-	}
+func init() {
+	sqlite.SetSqlite()
+	//在这里写一个同步表结构的代码
+	new(sqlite.YtdlpHistory).Sync()
+}
+func Download(root, proxy string) {
 	post := filepath.Join(root, "post.link")
 	log.Printf("根据%v文件开始下载\n", post)
 	lines := util.ReadByLine(post)
@@ -26,9 +26,9 @@ func Download(root string, yc YtdlpConfig) {
 			uri := strings.Split(line, "#")[0]
 			hashTag := strings.Split(line, "#")[1]
 			local := filepath.Join(root, hashTag)
-			name = DownloadHelper(uri, yc.Proxy, local)
+			name = DownloadHelper(uri, proxy, local)
 		} else {
-			name = DownloadHelper(line, yc.Proxy, root)
+			name = DownloadHelper(line, proxy, root)
 		}
 		log.Printf("下载%v\n流程结束", name)
 	}
@@ -49,25 +49,24 @@ func DownloadHelper(uri, proxy, location string) (title string) {
 	downloadCmd := exec.Command("yt-dlp", "--proxy", proxy, "-f", "bestvideo[height<=?1080]+bestaudio/best[height<=?1080]/mp4", "--no-playlist", "--paths", location, uri)
 	util.ExecCommand4Ytdlp(downloadCmd)
 	log.Printf("当前下载成功的文件标题:%s", name)
-	one := new(storage.Video)
+	one := new(sqlite.YtdlpHistory)
 	one.Url = uri
 	one.Name = name
 	insertOne, err := one.InsertOne()
 	if err != nil {
 		log.Fatalf("插入%d条数据失败:%v\n", insertOne, err)
-	} else {
-		log.Printf("成功插入%d条数据\n", insertOne)
 	}
+	log.Printf("成功插入%d条数据\n", insertOne)
 	return name
 }
 
 func sameUrl(uri string) (bool, error) {
-	one := new(storage.Video)
+	one := new(sqlite.YtdlpHistory)
 	one.Url = uri
-	return one.FindByUrl()
+	return one.ExistsByUrl()
 }
 func sameName(name string) (bool, error) {
-	one := new(storage.Video)
+	one := new(sqlite.YtdlpHistory)
 	one.Name = name
-	return one.FindByName()
+	return one.ExistsByName()
 }
