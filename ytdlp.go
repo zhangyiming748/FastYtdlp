@@ -15,7 +15,8 @@ func init() {
 	//在这里写一个同步表结构的代码
 	new(sqlite.YtdlpHistory).Sync()
 }
-func Download(root, proxy string) {
+//固定下载root下名为post.link文件当中的内容
+func Download(root, proxy,cookies string) {
 	post := filepath.Join(root, "post.link")
 	log.Printf("根据%v文件开始下载\n", post)
 	lines := util.ReadByLine(post)
@@ -26,19 +27,33 @@ func Download(root, proxy string) {
 			uri := strings.Split(line, "#")[0]
 			hashTag := strings.Split(line, "#")[1]
 			local := filepath.Join(root, hashTag)
-			name = DownloadHelper(uri, proxy, local)
+			name = DownloadHelper(uri, proxy, local,cookies)
 		} else {
-			name = DownloadHelper(line, proxy, root)
+			name = DownloadHelper(line, proxy, root,cookies)
 		}
 		log.Printf("下载%v\n流程结束", name)
 	}
 }
-func DownloadHelper(uri, proxy, location string) (title string) {
+func DownloadHelper(uri, proxy, location ,cookies string) (title string) {
 	if has, _ := sameUrl(uri); has {
 		log.Printf("由于数据库中已存在相同链接%v\t跳过此次下载\n", uri)
 		return uri
 	}
-	nameCmd := exec.Command("yt-dlp", "--proxy", proxy, "-f", "bestvideo[height<=?1080]+bestaudio/best[height<=?1080]/mp4", "--no-playlist", "--paths", location, "--get-filename", uri)
+	
+	// 构建yt-dlp命令参数
+	args := []string{
+		"--proxy", proxy,
+		"-f", "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]",
+		"--no-playlist",
+		"--paths", location,
+	}
+	if strings.Contains(uri,"pornhub"){
+		args = append(args, "--cookies",cookies)
+	}
+	// 获取文件名的命令
+	nameArgs := append([]string{}, args...)
+	nameArgs = append(nameArgs, "--get-filename", uri)
+	nameCmd := exec.Command("yt-dlp", nameArgs...)
 	name := util.GetVideoName(nameCmd)
 	name = filepath.Base(name)
 	if has, _ := sameName(name); has {
@@ -46,7 +61,11 @@ func DownloadHelper(uri, proxy, location string) (title string) {
 		return name
 	}
 	log.Printf("当前下载的文件标题:%s", name)
-	downloadCmd := exec.Command("yt-dlp", "--proxy", proxy, "-f", "bestvideo[height<=?1080]+bestaudio/best[height<=?1080]/mp4", "--no-playlist", "--paths", location, uri)
+	
+	// 下载命令
+	downloadArgs := append([]string{}, args...)
+	downloadArgs = append(downloadArgs, uri)
+	downloadCmd := exec.Command("yt-dlp", downloadArgs...)
 	util.ExecCommand4Ytdlp(downloadCmd)
 	log.Printf("当前下载成功的文件标题:%s", name)
 	one := new(sqlite.YtdlpHistory)

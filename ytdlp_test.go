@@ -1,11 +1,14 @@
 package FastYtdlp
 
 import (
+	"os"
 	"testing"
 )
 
+// go test -v -timeout 0 -run ^TestYtdlp$
 func TestYtdlp(t *testing.T) {
-	root := "C:\\Users\\zhang\\Github\\FastYtdlp"
-	proxy := "192.168.5.2:8889"
-	Download(root, proxy)
+	root := "/data"
+	//proxy := "http://192.168.5.115:8889"
+	proxy:=os.Getenv("PROXY")
+	Download(root, proxy,"/data/pornhub.cookie")
 }
