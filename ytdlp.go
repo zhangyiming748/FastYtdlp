@@ -15,11 +15,12 @@ func init() {
 	//在这里写一个同步表结构的代码
 	new(sqlite.YtdlpHistory).Sync()
 }
+
 //固定下载root下名为post.link文件当中的内容
-func Download(root, proxy,cookies string) {
-	post := filepath.Join(root, "post.link")
-	log.Printf("根据%v文件开始下载\n", post)
-	lines := util.ReadByLine(post)
+func Download(postlink, proxy, cookies string) {
+	log.Printf("根据%v文件开始下载\n", postlink)
+	root := filepath.Dir(postlink)
+	lines := util.ReadByLine(postlink)
 	for i, line := range lines {
 		log.Printf("正在处理第%d个链接:%s", i+1, line)
 		var name string
@@ -27,19 +28,19 @@ func Download(root, proxy,cookies string) {
 			uri := strings.Split(line, "#")[0]
 			hashTag := strings.Split(line, "#")[1]
 			local := filepath.Join(root, hashTag)
-			name = DownloadHelper(uri, proxy, local,cookies)
+			name = DownloadHelper(uri, proxy, local, cookies)
 		} else {
-			name = DownloadHelper(line, proxy, root,cookies)
+			name = DownloadHelper(line, proxy, root, cookies)
 		}
 		log.Printf("下载%v\n流程结束", name)
 	}
 }
-func DownloadHelper(uri, proxy, location ,cookies string) (title string) {
+func DownloadHelper(uri, proxy, location, cookies string) (title string) {
 	if has, _ := sameUrl(uri); has {
 		log.Printf("由于数据库中已存在相同链接%v\t跳过此次下载\n", uri)
 		return uri
 	}
-	
+
 	// 构建yt-dlp命令参数
 	args := []string{
 		"--proxy", proxy,
@@ -47,8 +48,8 @@ func DownloadHelper(uri, proxy, location ,cookies string) (title string) {
 		"--no-playlist",
 		"--paths", location,
 	}
-	if strings.Contains(uri,"pornhub"){
-		args = append(args, "--cookies",cookies)
+	if strings.Contains(uri, "pornhub") {
+		args = append(args, "--cookies", cookies)
 	}
 	// 获取文件名的命令
 	nameArgs := append([]string{}, args...)
@@ -61,7 +62,7 @@ func DownloadHelper(uri, proxy, location ,cookies string) (title string) {
 		return name
 	}
 	log.Printf("当前下载的文件标题:%s", name)
-	
+
 	// 下载命令
 	downloadArgs := append([]string{}, args...)
 	downloadArgs = append(downloadArgs, uri)
