@@ -51,6 +51,9 @@ func DownloadHelper(uri, proxy, location, cookies string) (title string) {
 	if strings.Contains(uri, "pornhub") {
 		args = append(args, "--cookies", cookies)
 	}
+	if strings.Contains(uri,"youtu"){
+		args = append(args, "--cookies",cookies)
+	}
 	// 获取文件名的命令
 	nameArgs := append([]string{}, args...)
 	nameArgs = append(nameArgs, "--get-filename", uri)
